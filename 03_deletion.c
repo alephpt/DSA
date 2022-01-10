@@ -78,6 +78,8 @@ struct Node* findNode(struct Node* base)
 }
 */
 
+// void dedup
+
 void incrementFollowing(struct Node* increase)
 {
 	// set index to the node we want to increase from
@@ -213,6 +215,21 @@ int deleteNode(struct Node* del_n){
 	free(del_n);
 	return 0;
 }
+
+int deleteList(struct Node** head_r){
+	struct Node* cursor = *head_r;
+	struct Node* point;
+
+	while (cursor != NULL)
+	{
+		point = cursor->next;
+		free(cursor);
+		cursor = point;
+	}
+
+	*head_r = NULL;
+}
+
 
 void printL(struct Node *node)
 {
@@ -436,31 +453,12 @@ int main()
 {
 	struct Node* head = NULL;
 	int running = 0;
+
+	// run loop while successful
 	while(running == 0){
 		running = input_loop(&head);
 	};
 
-/*
-	append(&head, "D");
-	push(&head, "B");
-	push(&head, "A");
-	append(&head, "E");
-
-	insertAfter(findValue(&head, "B"), "C");
-
-	append(&head, "G");
-	insertBefore(findValue(&head, "G"), "F");
-
-	printf("Linked List contains: \n");
-	printL(head);
-
-	printf("\nLeng: %d \n", Llength(head));
-
-	deleteNode(findValue(&head, "B"));
-
-	printf("\nLinked List contains: \n");
-	printL(head);
-
-	return 0;
-*/
+	// delete List when finished
+	deleteList(&head);
 }
