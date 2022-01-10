@@ -23,7 +23,7 @@ struct Node* findHead(struct Node* current)
 struct Node* findTail(struct Node* current)
 {
 	while(current->next != NULL){
-		current = current->next;
+			current = current->next;
 	}
 
 	return current;
@@ -87,8 +87,12 @@ struct Node* findNode(struct Node* base)
 
 int Llength(struct Node* list)
 {
-	struct Node* tail = findTail(list);
-	return (tail->index + 1);
+	if(list){
+		struct Node* tail = findTail(list);
+		return (tail->index + 1);
+	} else {
+		return 0;
+	}
 }
 
 void incrementFollowing(struct Node* increase)
@@ -217,28 +221,6 @@ int insertBefore(struct Node* next_n, char* new_data)
 	return 0;
 }
 
-int deleteNode(struct Node* del_n){
-	// if this node is the head
-	if (del_n->prev == NULL) {
-		struct Node* next_n = del_n->next;
-		next_n->prev = NULL;
-	} else 
-	// if this node is the tail
-	if (del_n->next == NULL) {
-		struct Node* prev_n = del_n->prev;
-		prev_n->next = NULL;
-	} else {
-		struct Node* prev_n = del_n->prev;
-		struct Node* next_n = del_n->next;
-		prev_n->next = next_n;
-		next_n->prev = prev_n;
-	}
-	
-	decrementFollowing(del_n);
-	free(del_n);
-	return 0;
-}
-
 int deleteList(struct Node** head_r){
 	struct Node* cursor = *head_r;
 	struct Node* point;
@@ -253,6 +235,38 @@ int deleteList(struct Node** head_r){
 	*head_r = NULL;
 }
 
+int deleteNode(struct Node** head_r, char* in_val){
+	struct Node* del_n = findValue(head_r, in_val);
+
+	// if this node is the head
+	if (del_n->prev == NULL) {
+		struct Node* temp = *head_r;
+		if(del_n->next == NULL){
+			*head_r = (*head_r)->next;
+			free(temp);
+//		 	*head_r = NULL;
+		} else {
+			decrementFollowing(del_n);
+			*head_r = temp->next;
+			free(temp);
+		}
+	} else 
+	// if this node is the tail
+	if (del_n->next == NULL) {
+		struct Node* prev_n = del_n->prev;
+		prev_n->next = NULL;
+		free(del_n);
+	} else {
+		struct Node* prev_n = del_n->prev;
+		struct Node* next_n = del_n->next;
+		prev_n->next = next_n;
+		next_n->prev = prev_n;
+		decrementFollowing(del_n);
+		free(del_n);
+	}
+	
+	return 0;
+}
 
 void printL(struct Node *node)
 {
@@ -457,7 +471,7 @@ int input_loop(struct Node** head_r)
 			printf("What value would you like to delete? ");
 			scanf("%s", val_i);
 			
-			if(deleteNode(findValue(head_r, val_i)) == 0){
+			if(deleteNode(head_r, val_i) == 0){
 				printf("\n");
 				printL(*head_r);
 			} else {
