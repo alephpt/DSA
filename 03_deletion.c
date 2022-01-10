@@ -9,21 +9,14 @@ struct Node
 	struct Node *prev;
 	char data[];
 };
+ 
 
-int Llength(struct Node* list)
-{
-	int count = 0;
-	while (list != NULL){
-		list = list->next;
-		count++;
-	}
-	return count;
-}
 struct Node* findHead(struct Node* current)
 {
 	while(current->prev != NULL){
 		current = current->prev;
 	}
+
 	return current;
 }
 
@@ -32,6 +25,7 @@ struct Node* findTail(struct Node* current)
 	while(current->next != NULL){
 		current = current->next;
 	}
+
 	return current;
 }
 
@@ -48,14 +42,25 @@ struct Node* findNext(struct Node* current)
 struct Node* findValue(struct Node** head_r, char* q_data)
 {
 	struct Node *cursor = *head_r;
+	int matching = 0;
+
 	while (cursor != NULL){
-		if (cursor->data == q_data){
-			return cursor;
-		} else {
+		for(int i = 0; i < strlen(cursor->data); i++){
+			if (cursor->data[i] == q_data[i]){
+				matching = 1;
+			} else {
+				matching = 0;
+				break;
+			}
+		} 
+
+		if(matching == 1) { return cursor; }
+		else { 
 			cursor = cursor->next;
 		}
 	}
 	printf("Requested Value not found in List using findValue.");
+	return NULL;
 }
 
 struct Node* findIndex(struct Node** head_r, int i_data)
@@ -79,6 +84,12 @@ struct Node* findNode(struct Node* base)
 */
 
 // void dedup
+
+int Llength(struct Node* list)
+{
+	struct Node* tail = findTail(list);
+	return (tail->index + 1);
+}
 
 void incrementFollowing(struct Node* increase)
 {
@@ -207,10 +218,22 @@ int insertBefore(struct Node* next_n, char* new_data)
 }
 
 int deleteNode(struct Node* del_n){
-	struct Node* prev_n = del_n->prev;
-	struct Node* next_n = del_n->next;
-	prev_n->next = next_n;
-	next_n->prev = prev_n;
+	// if this node is the head
+	if (del_n->prev == NULL) {
+		struct Node* next_n = del_n->next;
+		next_n->prev = NULL;
+	} else 
+	// if this node is the tail
+	if (del_n->next == NULL) {
+		struct Node* prev_n = del_n->prev;
+		prev_n->next = NULL;
+	} else {
+		struct Node* prev_n = del_n->prev;
+		struct Node* next_n = del_n->next;
+		prev_n->next = next_n;
+		next_n->prev = prev_n;
+	}
+	
 	decrementFollowing(del_n);
 	free(del_n);
 	return 0;
@@ -233,6 +256,7 @@ int deleteList(struct Node** head_r){
 
 void printL(struct Node *node)
 {
+	printf("List Length: %d\n\n", Llength(node));
 	while (node != NULL){
 		printf("%d - %s\n", node->index, node->data);
 		node = node->next;
@@ -241,8 +265,7 @@ void printL(struct Node *node)
 
 void prompt_opts(){
 	// prompt user for input options
-	printf("\n\t\tWELCOME TO DICK'S LIST BUILDER\n\n");
-	printf("\tOptions:\n"); 
+	printf("\n\tOptions:\n"); 
 	printf("\t push \t\t - Insert Value at the Head of the List.\n"); 			// option 1
 	printf("\t append \t - Insert Value at the end of the List.\n"); 			// option 2
 	printf("\t insert \t - Inserts Value after a specified Value or at a Certain Index.\n");// option 3
@@ -451,6 +474,8 @@ int input_loop(struct Node** head_r)
 
 int main()
 {
+	printf("\n\t\tWELCOME TO DICK'S LIST BUILDER\n");
+	
 	struct Node* head = NULL;
 	int running = 0;
 
