@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 struct Node
 {
 	int index;
-	char data;
 	struct Node *next;
 	struct Node *prev;
+	char data[];
 };
 
 int Llength(struct Node* list)
@@ -49,7 +49,7 @@ struct Node* findValue(struct Node** head_r, char* q_data)
 {
 	struct Node *cursor = *head_r;
 	while (cursor != NULL){
-		if (cursor->data == *q_data){
+		if (cursor->data == q_data){
 			return cursor;
 		} else {
 			cursor = cursor->next;
@@ -102,12 +102,15 @@ void decrementFollowing(struct Node* decrease)
 
 int pushValue(struct Node** head_r, char* new_data)
 {
-	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
-	
+	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node)+(strlen(new_data)*sizeof(char)));
 
 	new_node->prev = NULL;
-	new_node->index = 0;		// set index to 0
-	new_node->data = *new_data;	// push new data
+	new_node->index = 0;// set index to 0
+
+	// push new data
+	for(int ch = 0; ch < strlen(new_data); ch++){
+		new_node->data[ch] = new_data[ch];
+	}
 	
 	if(*head_r != NULL){		// if the head is not null
 		new_node->next = (*head_r);	// set new.next to current.head
@@ -122,10 +125,14 @@ int pushValue(struct Node** head_r, char* new_data)
 
 int appendValue(struct Node** head_r, char* new_data)
 {
-	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
+	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node)+(strlen(new_data)*sizeof(char)));
 	struct Node *last = *head_r;
 
-	new_node->data = *new_data;
+	// push new data
+	for(int ch = 0; ch < strlen(new_data); ch++){
+		new_node->data[ch] = new_data[ch];
+	}
+
 	new_node->next = NULL;
 
 	if (*head_r == NULL)
@@ -151,8 +158,13 @@ int insertAfter(struct Node* prev_n, char* new_data)
 		return 1;
 	}
 
-	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
-	new_node->data  = *new_data;	// set data of new
+	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node)+(strlen(new_data)*sizeof(char)));
+
+	// push new data
+	for(int ch = 0; ch < strlen(new_data); ch++){
+		new_node->data[ch] = new_data[ch];
+	}
+
 	new_node->next = prev_n->next;	// set next to the prev next
 	new_node->prev = prev_n;
 	prev_n->next = new_node;	// set next of prev to current
@@ -175,8 +187,13 @@ int insertBefore(struct Node* next_n, char* new_data)
 		return 0;
 	}
 	
-	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
-	new_node->data = *new_data;
+	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node)+(strlen(new_data)*sizeof(char)));
+
+	// push new data
+	for(int ch = 0; ch < strlen(new_data); ch++){
+		new_node->data[ch] = new_data[ch];
+	}
+
 	new_node->prev = next_n->prev;
 	new_node->next = next_n;
 	next_n->prev = new_node;
@@ -193,13 +210,14 @@ int deleteNode(struct Node* del_n){
 	prev_n->next = next_n;
 	next_n->prev = prev_n;
 	decrementFollowing(del_n);
+	free(del_n);
 	return 0;
 }
 
 void printL(struct Node *node)
 {
 	while (node != NULL){
-		printf("%d - %c\n", node->index, node->data);
+		printf("%d - %s\n", node->index, node->data);
 		node = node->next;
 	}
 }
@@ -217,7 +235,7 @@ void prompt_opts(){
 }
 
 
-int input_loop(struct Node* head_r)
+int input_loop(struct Node** head_r)
 {
 	char func_i[7]; // options (push, append, insert, delete, exit)
 	char val_i[5]; // input values
@@ -337,43 +355,75 @@ int input_loop(struct Node* head_r)
 			printf("This shouldn't happen.");
 			break;
 		case 1: // push
-			printf("What value would you like to push?");
+			printf("What value would you like to push? ");
 			scanf("%s", val_i);
 			
-			if(pushValue(&head_r, val_i) == 0){
-				printf("%s pushed.", val_i);
+			if(pushValue(head_r, val_i) == 0){
+				printf("\n");
+				printL(*head_r);
 			} else {
 				printf("pushing %s failed", val_i);
 			}
 
-			printL(head_r);
 			break;
 		case 2: // append
-			printf("What value would you like to append?");
+			printf("What value would you like to append? ");
 			scanf("%s", val_i);
 			
-			if(appendValue(&head_r, val_i) == 0){
-				printf("%s appended.", val_i);
+			if(appendValue(head_r, val_i) == 0){
+				printf("\n");
+				printL(*head_r);
 			} else {
 				printf("appending %s failed.", val_i);
 			}
 
-			printL(head_r);
 			break;
 		case 3: // insert
-			printf("What value would you like to insert?");
+			int choice = 0;
+			printf("What value would you like to insert? ");
 			scanf("%s", val_i);
+			printf("\nInput \"0\" to insert value based at a specified Index,\n  and \"1\" to insert after a specified Value? ");
+			scanf("%d", &choice);
+
+			if(choice == 0){ // Index Based Insertion
+				int index_v = 0;
+				printf("\nWhat Index would you like %s to be inserted to? ", val_i);
+				scanf("%d", &index_v);
+
+				if(insertBefore(findIndex(head_r, index_v), val_i) == 0){
+					printf("\n");
+					printL(*head_r);
+				} else {
+					printf("inserting %s at %d failed.", val_i, index_v);
+				}
+			} else
+			if(choice == 1){ // Value Based Insertion
+				char val_c[5];
+				printf("\nWhat Value do you want to insert %s to be inserted after? ", val_i);
+				scanf("%s", val_c);
+
+				if(insertAfter(findValue(head_r, val_c), val_i) == 0){
+					printf("\n");
+					printL(*head_r);
+				} else {
+					printf("inserting %s after %s failed.", val_i, val_c);
+				}
+			} else {
+				printf("Invalid Option.\n");
+			}
+
 			break;
 		case 4: // delete
-			printf("What value would you like to delete?");
+			printf("What value would you like to delete? ");
 			scanf("%s", val_i);
-			if(deleteNode(findValue(&head_r, val_i)) == 0){
-				printf("%s deleted", val_i);
+			
+			if(deleteNode(findValue(head_r, val_i)) == 0){
+				printf("\n");
+				printL(*head_r);
 			} else {
 				printf("deleting %s failed.", val_i);
 			}
 
-			printL(head_r);
 			break;
 		default:
 			printf("Undefined Behaviour.");
@@ -385,8 +435,10 @@ int input_loop(struct Node* head_r)
 int main()
 {
 	struct Node* head = NULL;
-	
-	while(input_loop(head) == 0){};
+	int running = 0;
+	while(running == 0){
+		running = input_loop(&head);
+	};
 
 /*
 	append(&head, "D");
