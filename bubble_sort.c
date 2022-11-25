@@ -6,19 +6,24 @@ typedef struct {
 	int* arr;
 } DisArr;
 
-DisArr getArray () {
-	DisArr tArr; 
+DisArr* getArray (char** inputs, int count) {
+	DisArr *tArr = malloc(sizeof(DisArr)); 
+	tArr->arr = malloc(count * sizeof(int));
+	tArr->n = count;
 
-	printf("How many items are you entering?\n");
-	scanf("%d", &tArr.n);
-	tArr.arr = calloc(tArr.n, sizeof(int));
+	for (int i = 1; i <= count; i++) {
+		int input_int = 0;
+		if (atoi(inputs[i]) == 0) {
+			for (int l = 0; l < sizeof(inputs[i]); l++) {
+				input_int += (int)inputs[i][l];
+			}
+		}
+		else {
+			input_int = atoi(inputs[i]);
+		}
 
-	printf("Input numbers (space seperated):\n");
-	for (int a = 0; a < tArr.n; a++) {
-		scanf("%d", tArr.arr + a);
+		tArr->arr[i - 1] = input_int;
 	}
-	
-	printf("\n");
 
 	return tArr;
 }
@@ -57,15 +62,17 @@ void bubSort(int* arr, int n) {
 	}
 }
 
-int main() {
+int main(int argc, char** argv) {
 	//int arr[] = { 10, 5, 6, 32, 12, 11, 1, 13, 4, 8 };
-	DisArr nArr = getArray();
+	DisArr* nArr = getArray(argv, argc - 1);
 
 	printf("origin: ");
-	printArr(nArr.arr, nArr.n);
+	printArr(nArr->arr, nArr->n);
 	printf("\n");
 
-	bubSort(nArr.arr, nArr.n); 
+	bubSort(nArr->arr, nArr->n); 
+
+	free(nArr);
 
 	return 0;
 }
