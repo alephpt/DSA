@@ -7,4 +7,5 @@ typedef struct {
 } Values;
 
 Values* getValues (char** inputs, int count);
+void swapValues (Values* primera, Values* segundo);
 void printValues(Values* arr, int n);

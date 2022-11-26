@@ -38,6 +38,14 @@ Values* getValues (char** inputs, int count) {
 	return tArr;
 }
 
+void swapValues (Values* primera, Values* segundo) {
+	Values first = *primera;
+	*primera = *segundo;
+	*segundo = first;
+
+	return;
+}
+
 void printValues(Values* arr, int n) {
 	for(int i = 0; i < n; i++) {
 		if (atoi(arr[i].str) == arr[i].val) {

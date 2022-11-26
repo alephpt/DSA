@@ -1,12 +1,4 @@
-#include "input.h"
-
-void swapValues (Values* primera, Values* segundo) {
-	Values first = *primera;
-	*primera = *segundo;
-	*segundo = first;
-
-	return;
-}
+#include "../input.h"
 
 void bubbleSort(Values* arr, int n) {
 	for(int i = 0; i < n - 1; i++){
