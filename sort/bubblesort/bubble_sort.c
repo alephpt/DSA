@@ -4,20 +4,18 @@
 #include <ctype.h>
 
 typedef struct {
-	int n;
-	int* arr;
-	char* str[];
-} DisArr;
+	int val;
+	char* str;
+} Node;
 
-DisArr* getArray (char** inputs, int count) {
-	DisArr *tArr = malloc(sizeof(DisArr) + (sizeof(inputs) * sizeof(char)) + (count * sizeof(int))); 
-	tArr->arr = malloc(count * sizeof(int));
-	tArr->n = count;
+Node* getArray (char** inputs, int count) {
+	Node *tArr = (Node*)malloc(sizeof(Node) + (sizeof(Node) * sizeof(inputs)) + (sizeof(Node) * sizeof(int))); 
 
 	// iterate through all of the inputs
 	for (int i = 1; i <= count; i++) {
-		int input_int = 0; 	// interger value of input char
+		int input_int = 0; 	// integer value of input char
 		int ischar = 0;   	// bool for if non-digit char
+		
 
 		// loop through all characters of input
 		for (int l = 0; l < strlen(inputs[i]); l++) {
@@ -39,41 +37,34 @@ DisArr* getArray (char** inputs, int count) {
 		// if we did not find a non-digit char convert string to int
 		if (ischar == 0) { input_int = atoi(inputs[i]); }
 
-		// store the string and the int version
-		tArr->str[i - 1] = (char*) malloc(sizeof(inputs[i - 1]));
-		strcpy(tArr->str[i - 1], inputs[i]);
-		tArr->arr[i - 1] = input_int;
+		// allocate space in new node 
+		tArr[i - 1].str = (char*) malloc(strlen(inputs[i - 1]) * sizeof(char));
 		
-		// printf("assigning \'%s\' with ASCII value %d\n", tArr->str[i - 1], input_int);
+		// store the string and the int version
+		strcpy(tArr[i - 1].str, inputs[i]);
+		tArr[i - 1].val = input_int;
+		
+	//	printf("assign tArr.str <- %s with %d\n", tArr[i - 1].str, input_int);
 	}
-
-	printf("\n");
 
 	return tArr;
 }
 
-void swap(int* primeraA, char* primeraC[], int* segundoA, char* segundoC[]) {
-	int firstA = *primeraA;
-
-	size_t primC_len = strlen(*primeraC);
-	char *firstC = malloc(primC_len + 2);
-	firstC = *primeraC;
-	
-	*primeraA = *segundoA;
-	*primeraC = *segundoC;
-	*segundoA = firstA;
-	*segundoC = firstC;
+void swap (Node* primera, Node* segundo) {
+	Node first = *primera;
+	*primera = *segundo;
+	*segundo = first;
 
 	return;
 }
 
-void printArr(int arr[], char* str[], int n) {
+void printArr(Node* arr, int n) {
 
 	for(int i = 0; i < n; i++) {
-		if (atoi(*(str + i)) == arr[i]) {
-			printf("%d ", arr[i]);
+		if (atoi(arr[i].str) == arr[i].val) {
+			printf("%d ", arr[i].val);
 		} else {
-			printf("%s ", str[i]);
+			printf("%s ", arr[i].str);
 		}
 	}
 
@@ -82,29 +73,36 @@ void printArr(int arr[], char* str[], int n) {
 	return;
 }
 
-void bubSort(int* arr, char* str[], int n) {
+void bubSort(Node* arr, int n) {
 	for(int i = 0; i < n - 1; i++){
 		for(int j = 0; j < n - i - 1; j++) {
-			if (arr[j] > arr[j + 1]) {
-				swap(&arr[j], &str[j], &arr[j + 1], &str[j + 1]);
+		//	printf("i-%d : j-%d\n", i, j);
+
+			if (arr[j].val > arr[j + 1].val) {
+				swap(&arr[j], &arr[j + 1]);
 			}
 
-			printf("pass %d, phase %d: ", i, j);
-			printArr(arr, str, n);
+		//	printf("pass %d, phase %d: ", i, j);
+		//	printArr(arr, n);
 		}
 	}
 }
 
 int main(int argc, char** argv) {
-	//int arr[] = { 10, 5, 6, 32, 12, 11, 1, 13, 4, 8 };
-	DisArr* nArr = getArray(argv, argc - 1);
+	Node* nArr = getArray(argv, argc - 1);
 
-//	printf("origin: ");
-//	printArr(nArr->arr, nArr->str, argc - 1);
-//	printf("\n");
+	printf("input: ");
+	printf("\n");
+	printArr(nArr, argc - 1);
+	printf("\n");
 
-	bubSort(nArr->arr, nArr->str, argc - 1); 
+	bubSort(nArr, argc - 1); 
 
+	printf("sorted: ");
+	printf("\n");
+	printArr(nArr, argc - 1);
+	printf("\n");
+	
 	free(nArr);
 
 	return 0;
