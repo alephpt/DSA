@@ -9,7 +9,7 @@ typedef struct {
 } Node;
 
 Node* getArray (char** inputs, int count) {
-	Node *tArr = (Node*)malloc(sizeof(Node) + (sizeof(Node) * sizeof(inputs)) + (sizeof(Node) * sizeof(int))); 
+	Node *tArr = (Node*)calloc(count, sizeof(Node) + sizeof(inputs) + sizeof(int)); 
 
 	// iterate through all of the inputs
 	for (int i = 1; i <= count; i++) {
@@ -37,11 +37,8 @@ Node* getArray (char** inputs, int count) {
 		// if we did not find a non-digit char convert string to int
 		if (ischar == 0) { input_int = atoi(inputs[i]); }
 
-		// allocate space in new node 
-		tArr[i - 1].str = (char*) malloc(strlen(inputs[i - 1]) * sizeof(char));
-		
-		// store the string and the int version
-		strcpy(tArr[i - 1].str, inputs[i]);
+		// store the string and the int version (if they are the same)
+		tArr[i - 1].str = inputs[i];
 		tArr[i - 1].val = input_int;
 		
 	//	printf("assign tArr.str <- %s with %d\n", tArr[i - 1].str, input_int);
