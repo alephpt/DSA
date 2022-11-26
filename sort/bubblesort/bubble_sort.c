@@ -9,7 +9,7 @@ typedef struct {
 } Node;
 
 Node* getArray (char** inputs, int count) {
-	Node *tArr = (Node*)calloc(count, sizeof(Node) + sizeof(inputs) + sizeof(int)); 
+	Node *tArr = (Node*)calloc(count, sizeof(Node) + sizeof(inputs)); 
 
 	// iterate through all of the inputs
 	for (int i = 1; i <= count; i++) {
