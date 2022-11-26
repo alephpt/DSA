@@ -6,16 +6,15 @@
 typedef struct {
 	int val;
 	char* str;
-} Node;
+} Values;
 
-Node* getArray (char** inputs, int count) {
-	Node *tArr = (Node*)calloc(count, sizeof(Node) + sizeof(inputs)); 
+Values* getArray (char** inputs, int count) {
+	Values *tArr = (Values*)calloc(count, sizeof(Values) + sizeof(inputs)); 
 
 	// iterate through all of the inputs
 	for (int i = 1; i <= count; i++) {
 		int input_int = 0; 	// integer value of input char
 		int ischar = 0;   	// bool for if non-digit char
-		
 
 		// loop through all characters of input
 		for (int l = 0; l < strlen(inputs[i]); l++) {
@@ -40,23 +39,30 @@ Node* getArray (char** inputs, int count) {
 		// store the string and the int version (if they are the same)
 		tArr[i - 1].str = inputs[i];
 		tArr[i - 1].val = input_int;
-		
-	//	printf("assign tArr.str <- %s with %d\n", tArr[i - 1].str, input_int);
 	}
 
 	return tArr;
 }
 
-void swap (Node* primera, Node* segundo) {
-	Node first = *primera;
+void swap (Values* primera, Values* segundo) {
+	Values first = *primera;
 	*primera = *segundo;
 	*segundo = first;
 
 	return;
 }
 
-void printArr(Node* arr, int n) {
+void bubSort(Values* arr, int n) {
+	for(int i = 0; i < n - 1; i++){
+		for(int j = 0; j < n - i - 1; j++) {
+			if (arr[j].val > arr[j + 1].val) {
+				swap(&arr[j], &arr[j + 1]);
+			}
+		}
+	}
+}
 
+void printArr(Values* arr, int n) {
 	for(int i = 0; i < n; i++) {
 		if (atoi(arr[i].str) == arr[i].val) {
 			printf("%d ", arr[i].val);
@@ -70,23 +76,8 @@ void printArr(Node* arr, int n) {
 	return;
 }
 
-void bubSort(Node* arr, int n) {
-	for(int i = 0; i < n - 1; i++){
-		for(int j = 0; j < n - i - 1; j++) {
-		//	printf("i-%d : j-%d\n", i, j);
-
-			if (arr[j].val > arr[j + 1].val) {
-				swap(&arr[j], &arr[j + 1]);
-			}
-
-		//	printf("pass %d, phase %d: ", i, j);
-		//	printArr(arr, n);
-		}
-	}
-}
-
 int main(int argc, char** argv) {
-	Node* nArr = getArray(argv, argc - 1);
+	Values* nArr = getArray(argv, argc - 1);
 
 	printf("input: ");
 	printf("\n");
