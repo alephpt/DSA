@@ -2,23 +2,33 @@
 
 // concept 
     // 4 1 10 7 3
-    // 
-    //
+    
 void insertionSort(Values* arr, int n) {
-    Values value;
+    Values target;
 
+    // 0, 1, 2, 3, 4
     for (int cursor = 0; cursor < n - 1; cursor++) {
-        int inside = cursor;
-        //printf(" round %d: \n", cursor);
-        while (inside >= 0 && arr[inside].val > arr[inside + 1].val) {
-            //printf(" \tinside %d:\n", inside);
-            value = arr[inside];
-            arr[inside] = arr[inside + 1];
-            arr[inside + 1] = value;
-            inside--;
-            //printf("\t\t");
-            //printValues(arr, n);
+        int target_i = cursor + 1;
+
+        printf("round %d: ", cursor);
+        printValues(arr, n);
+
+        if (arr[target_i - 1].val > arr[target_i].val) {
+            target = arr[target_i];
+            
+            while(arr[target_i - 1].val > target.val && target_i > 0) {
+                arr[target_i] = arr[target_i - 1];
+                target_i--;
+                printf("  inner %d:\n\t", target_i);
+                printValues(arr, n);
+            }
+            
+            arr[target_i] = target;
         }
+ 
+        printf("end round %d: ", cursor);
+        printValues(arr, n);
+        printf("\n");   
     }
 
     return;
@@ -30,10 +40,10 @@ int main(int argc, char** argv) {
 
     printf("input: ");
     printValues(vArr, args);
+    printf("\n");
     
     insertionSort(vArr, args);
 
-    printf("\n");
     printf("output: ");
     printValues(vArr, args);
 
